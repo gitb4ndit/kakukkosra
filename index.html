@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antik Kakukkóra - Mobilbarát</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            gap: 20px;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #d7ccc8;
+            font-family: 'Georgia', serif;
+            flex-wrap: wrap; /* Mobilon egymás alá teszi a blokkokat */
+        }
+
+        /* Oldalsó Panel - Naptár */
+        .side-panel {
+            width: 280px;
+            background: #fdf5e6;
+            border: 10px solid #5d4037;
+            border-image: linear-gradient(#8d6e63, #3e2723) 10;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .cal-header { background: #8b0000; color: white; padding: 10px; font-weight: bold; margin: -15px -15px 15px -15px; text-transform: uppercase; }
+        .cal-day { font-size: 4rem; font-weight: bold; color: #333; margin: 5px 0; }
+        .cal-year { font-size: 1.5rem; color: #5d4037; font-weight: bold; margin-top: 10px; border-top: 1px solid #d2b48c; padding-top: 10px; }
+        .poem-box { font-style: italic; line-height: 1.6; border-top: 2px double #d2b48c; padding-top: 15px; margin-top: 15px; white-space: pre-line; color: #3e2723; min-height: 100px; text-align: left; }
+        .poem-author { font-weight: bold; display: block; text-align: right; margin-top: 10px; font-style: normal; }
+
+        /* KAKUKKÓRA HÁZ */
+        .cuckoo-house {
+            width: 320px;
+            height: 380px;
+            background: #5d4037 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            position: relative;
+            border: 8px solid #3e2723;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            margin-top: 120px; /* Hely a tetőnek */
+            margin-bottom: 250px; /* Hely az ingának */
+        }
+
+        .cuckoo-house::before {
+            content: '';
+            position: absolute;
+            top: -120px; left: -30px;
+            border-left: 190px solid transparent; border-right: 190px solid transparent;
+            border-bottom: 120px solid #3e2723;
+        }
+
+        .clock-face {
+            width: 200px; height: 200px;
+            background: #d2b48c url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            border-radius: 50%;
+            border: 12px double #2d1b15;
+            position: absolute; top: 120px; left: 50%; transform: translateX(-50%);
+        }
+
+        .number { position: absolute; width: 100%; height: 100%; text-align: center; font-weight: bold; font-size: 1.2rem; color: #2d1b15; padding: 5px; box-sizing: border-box; }
+
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; background: linear-gradient(90deg, #2d1b15 0%, #5d4037 50%, #2d1b15 100%); }
+        .hour { width: 10px; height: 50px; z-index: 3; }
+        .minute { width: 7px; height: 75px; z-index: 2; }
+        .second { width: 2px; height: 85px; background: #8b0000; z-index: 4; }
+
+        .pendulum-rod {
+            width: 8px; height: 180px;
+            background: #3e2723;
+            position: absolute; bottom: -180px; left: 50%;
+            transform: translateX(-50%);
+            transform-origin: top;
+            animation: swing 2s infinite ease-in-out;
+        }
+
+        .pendulum-bob {
+            width: 120px; height: 120px;
+            background: #3e2723;
+            border: 8px solid #2d1b15;
+            border-radius: 50%;
+            position: absolute; bottom: -60px; left: 50%;
+            transform: translateX(-50%);
+            overflow: hidden;
+        }
+
+        .pendulum-image { width: 100%; height: 100%; background-size: cover; background-position: center; filter: sepia(0.2); }
+
+        .door { width: 80px; height: 90px; background: #2d1b15; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); border-radius: 40px 40px 0 0; border: 3px solid #d2b48c; }
+        #bird { width: 60px; height: 60px; position: absolute; top: 100px; left: 10px; transition: top 1.2s ease-in-out; font-size: 35px; text-align: center; }
+        .door.open #bird { top: 15px; }
+
+        @keyframes swing {
+            0%, 100% { transform: translateX(-50%) rotate(18deg); }
+            50% { transform: translateX(-50%) rotate(-18deg); }
+        }
+
+        /* MOBIL OPTIMALIZÁLÁS */
+        @media (max-width: 600px) {
+            body { padding-top: 20px; }
+            .cuckoo-house { margin-top: 140px; transform: scale(0.9); }
+            .side-panel { width: 90%; order: -1; } /* A naptár legyen legfelül */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="side-panel">
+        <div class="cal-header" id="cal-month">HÓNAP</div>
+        <div class="cal-day" id="cal-day">00</div>
+        <div id="cal-weekday" style="font-weight: bold;">Nap</div>
+        <div class="cal-year" id="cal-year">2026</div>
+        <div class="poem-box" id="poem-content">Betöltés...</div>
+    </div>
+
+    <div class="cuckoo-house">
+        <div class="door" id="door"><div id="bird">🐦</div></div>
+        <div class="clock-face" id="face"></div>
+        <div class="pendulum-rod">
+            <div class="pendulum-bob">
+                <div class="pendulum-image" id="pendulum-img"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cuckooSound = new Audio('https://www.mobil-csengohang.hu/files/csengohang/mp3/effekt/kakukk.mp3'); 
+
+        const versek = {
+            tavasz: [{ iro: "József Attila", szoveg: "Sándor, József, Benedek,\nzsákban hozzák a meleget." }, { iro: "Petőfi Sándor", szoveg: "Itt van a tavasz, itt van újra,\nS szép, mint mindig, énnekem." }],
+            nyar: [{ iro: "Radnóti Miklós", szoveg: "Aranyat érő napsugárban\nfürdik a néma táj." }, { iro: "Kosztolányi Dezső", szoveg: "A nyár, a nyár!\nLobog a tűz, a nap hevít." }],
+            osz: [{ iro: "Áprily Lajos", szoveg: "A bíborerdő sárga lombja\nmár suttogva és sírva hull." }, { iro: "Petőfi Sándor", szoveg: "Itt van az ősz, itt van újra,\nS szép, mint mindig, énnekem." }],
+            tel: [{ iro: "Weöres Sándor", szoveg: "Hó szakad, hó szakad,\nfűre, fára rárakad." }, { iro: "József Attila", szoveg: "Azt mondják, hogy a tél hideg,\nde nekem mégis kedves." }]
+        };
+
+        const landscapeIds = {
+            tavasz: [1024, 1040, 1044],
+            nyar: [10, 11, 16],
+            osz: [1043, 1058, 1059],
+            tel: [1036, 1037, 1039]
+        };
+
+        const face = document.getElementById('face');
+        for (let i = 1; i <= 12; i++) {
+            let num = document.createElement('div');
+            num.className = 'number';
+            num.style.transform = `rotate(${i * 30}deg)`;
+            num.innerHTML = `<span style="display:inline-block; transform:rotate(-${i * 30}deg)">${i}</span>`;
+            face.appendChild(num);
+        }
+
+        function update() {
+            const now = new Date();
+            const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds(), mo = now.getMonth();
+            
+            updateHand('hour-hand', (h % 12 / 12) * 360 + (m / 60) * 30, 'hour');
+            updateHand('minute-hand', (m / 60) * 360, 'minute');
+            updateHand('second-hand', (s / 60) * 360, 'second');
+
+            if (m === 0 && s === 0) triggerCuckoo(h % 12 || 12);
+
+            document.getElementById('cal-month').innerText = ["Január", "Február", "Március", "Április", "Május", "Június", "Július", "Augusztus", "Szeptember", "Október", "November", "December"][mo];
+            document.getElementById('cal-day').innerText = now.getDate();
+            document.getElementById('cal-weekday').innerText = ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"][now.getDay()];
+            document.getElementById('cal-year').innerText = now.getFullYear();
+            
+            let sName = (mo >= 2 && mo <= 4) ? "tavasz" : (mo >= 5 && mo <= 7) ? "nyar" : (mo >= 8 && mo <= 10) ? "osz" : "tel";
+            
+            const imgEl = document.getElementById('pendulum-img');
+            if (!imgEl.style.backgroundImage) {
+                const ids = landscapeIds[sName];
+                const randomId = ids[Math.floor(Math.random() * ids.length)];
+                imgEl.style.backgroundImage = `url('https://picsum.photos/id/${randomId}/300/300')`;
+                const v = versek[sName][Math.floor(Math.random() * versek[sName].length)];
+                document.getElementById('poem-content').innerHTML = `"${v.szoveg}" <span class="poem-author">- ${v.iro}</span>`;
+            }
+        }
+
+        function updateHand(id, deg, type) {
+            let el = document.getElementById(id);
+            if(!el) { el = document.createElement('div'); el.id = id; el.className = `hand ${type}`; face.appendChild(el); }
+            el.style.transform = `translateX(-50%) rotate(${deg}deg)`;
+        }
+
+        function triggerCuckoo(times) {
+            const door = document.getElementById('door');
+            door.classList.add('open');
+            setTimeout(() => {
+                let c = 0;
+                const timer = setInterval(() => {
+                    if (c < times) { cuckooSound.currentTime = 0; cuckooSound.play().catch(()=>{}); c++; }
+                    else { clearInterval(timer); setTimeout(() => door.classList.remove('open'), 1000); }
+                }, 1200);
+            }, 1000);
+        }
+
+        setInterval(update, 1000);
+        update();
+    </script>
+</body>
+</html>
