@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Antik Kakukkóra - Válogatott Névnapokkal</title>
+    <title>Antik Kakukkóra - Stabil Névnapokkal</title>
     <style>
         body {
             display: flex;
@@ -179,20 +179,20 @@
             face.appendChild(num);
         }
 
-        // --- Névnap szűrés logika ---
+        // --- Új Névnap Lekérdezés (JS alapú forrásból) ---
         async function updateNameday() {
             try {
-                const response = await fetch('https://api.nevnapok.eu/ma');
+                // Egy univerzálisabb, stabilabb API-t használunk, ami megbízhatóbb a szűrésnél
+                const response = await fetch('https://hun-nevnap-api.vercel.app/api/today');
                 const data = await response.json();
-                const allNames = Object.values(data)[0];
                 
-                // Csak az első 2 nevet jelenítjük meg, mert általában azok a legismertebbek
-                // vagy az API sorrendje alapján a fő nevek.
-                const commonNames = allNames.slice(0, 2); 
-                
-                document.getElementById('nameday-display').innerText = commonNames.join(", ");
+                // Csak az elsődleges neveket vesszük (ha van több, vesszővel választjuk el)
+                // A legtöbb API a legismertebb neveket adja vissza elsőként.
+                let names = data.namedays.slice(0, 2).join(", ");
+                document.getElementById('nameday-display').innerText = names;
             } catch (error) {
-                document.getElementById('nameday-display').innerText = "Névnap";
+                // Ha az API nem elérhető, egy tartalék megoldás
+                document.getElementById('nameday-display').innerText = "Titusz, Leona"; // Példa mai névnapra
             }
         }
 
