@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Antik Kakukkóra - Stabil Névnapokkal</title>
+    <title>Antik Kakukkóra - Tájkép Ingával & WakeLock</title>
     <style>
         body {
             display: flex;
@@ -179,20 +179,14 @@
             face.appendChild(num);
         }
 
-        // --- Új Névnap Lekérdezés (JS alapú forrásból) ---
         async function updateNameday() {
             try {
-                // Egy univerzálisabb, stabilabb API-t használunk, ami megbízhatóbb a szűrésnél
                 const response = await fetch('https://hun-nevnap-api.vercel.app/api/today');
                 const data = await response.json();
-                
-                // Csak az elsődleges neveket vesszük (ha van több, vesszővel választjuk el)
-                // A legtöbb API a legismertebb neveket adja vissza elsőként.
                 let names = data.namedays.slice(0, 2).join(", ");
                 document.getElementById('nameday-display').innerText = names;
             } catch (error) {
-                // Ha az API nem elérhető, egy tartalék megoldás
-                document.getElementById('nameday-display').innerText = "Titusz, Leona"; // Példa mai névnapra
+                document.getElementById('nameday-display').innerText = "Titusz, Leona"; 
             }
         }
 
@@ -229,8 +223,17 @@
 
             let sName = (mo >= 2 && mo <= 4) ? "tavasz" : (mo >= 5 && mo <= 7) ? "nyar" : (mo >= 8 && mo <= 10) ? "osz" : "tel";
             const imgEl = document.getElementById('pendulum-img');
-            if (!imgEl.style.backgroundImage) {
-                imgEl.style.backgroundImage = `url('https://picsum.photos/seed/${sName}/200/200')`;
+            
+            const landscapeImages = {
+                tavasz: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=200&q=80",
+                nyar: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&q=80",
+                osz: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=200&q=80",
+                tel: "https://images.unsplash.com/photo-1418985991508-e47386d96a71?auto=format&fit=crop&w=200&q=80"
+            };
+
+            if (!imgEl.style.backgroundImage || imgEl.getAttribute('data-season') !== sName) {
+                imgEl.style.backgroundImage = `url('${landscapeImages[sName]}')`;
+                imgEl.setAttribute('data-season', sName);
                 const v = versek[sName][0];
                 document.getElementById('poem-content').innerHTML = `"${v.szoveg}" <span class="poem-author">- ${v.iro}</span>`;
             }
@@ -254,10 +257,26 @@
             }, 1000);
         }
 
+        // --- Képernyő ébren tartása (Wake Lock) ---
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {}
+        }
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
         setInterval(update, 1000);
         update();
         updateWeather();
         updateNameday();
+        requestWakeLock();
         setInterval(updateWeather, 600000);
     </script>
 </body>
