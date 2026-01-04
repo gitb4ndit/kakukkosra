@@ -2,129 +2,160 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antik Kakukkóra - Mobilbarát</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Antik Kakukkóra - Válogatott Névnapokkal</title>
     <style>
         body {
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: 50px;
+            padding-top: 20px;
             gap: 20px;
             min-height: 100vh;
             margin: 0;
             background-color: #d7ccc8;
             font-family: 'Georgia', serif;
-            flex-wrap: wrap; /* Mobilon egymás alá teszi a blokkokat */
+            overflow-x: hidden;
         }
 
-        /* Oldalsó Panel - Naptár */
+        .main-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
         .side-panel {
-            width: 280px;
+            width: 240px;
             background: #fdf5e6;
-            border: 10px solid #5d4037;
+            border: 8px solid #5d4037;
             border-image: linear-gradient(#8d6e63, #3e2723) 10;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-            padding: 15px;
-            margin-top: 20px;
+            padding: 12px;
             text-align: center;
         }
 
-        .cal-header { background: #8b0000; color: white; padding: 10px; font-weight: bold; margin: -15px -15px 15px -15px; text-transform: uppercase; }
-        .cal-day { font-size: 4rem; font-weight: bold; color: #333; margin: 5px 0; }
-        .cal-year { font-size: 1.5rem; color: #5d4037; font-weight: bold; margin-top: 10px; border-top: 1px solid #d2b48c; padding-top: 10px; }
-        .poem-box { font-style: italic; line-height: 1.6; border-top: 2px double #d2b48c; padding-top: 15px; margin-top: 15px; white-space: pre-line; color: #3e2723; min-height: 100px; text-align: left; }
-        .poem-author { font-weight: bold; display: block; text-align: right; margin-top: 10px; font-style: normal; }
+        .cal-header { background: #8b0000; color: white; padding: 8px; font-weight: bold; margin: -12px -12px 10px -12px; text-transform: uppercase; font-size: 0.9rem; }
+        .cal-day { font-size: 3rem; font-weight: bold; color: #333; margin: 0; }
+        .cal-year { font-size: 1.2rem; color: #5d4037; font-weight: bold; margin-top: 5px; border-bottom: 2px double #d2b48c; padding-bottom: 10px; }
+        
+        .poem-box { font-style: italic; line-height: 1.4; padding: 10px 0; border-bottom: 1px solid #d2b48c; white-space: pre-line; color: #3e2723; font-size: 0.85rem; text-align: left; }
+        .poem-author { font-weight: bold; display: block; text-align: right; margin-top: 5px; font-style: normal; }
 
-        /* KAKUKKÓRA HÁZ */
+        .weather-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(210, 180, 140, 0.15);
+            border-radius: 8px;
+            color: #3e2723;
+            border: 1px solid #d2b48c;
+        }
+        #weather-icon { font-size: 2.5rem; margin: 5px 0; display: block; }
+        .weather-temp { font-size: 1.5rem; font-weight: bold; color: #8b0000; }
+
+        .nameday-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #5d4037;
+            color: #fdf5e6;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            border: 2px solid #3e2723;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .nameday-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 5px; }
+        .nameday-name { font-weight: bold; font-size: 1.1rem; }
+
         .cuckoo-house {
-            width: 320px;
-            height: 380px;
+            width: 280px;
+            height: 340px;
             background: #5d4037 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
             position: relative;
-            border: 8px solid #3e2723;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            margin-top: 120px; /* Hely a tetőnek */
-            margin-bottom: 250px; /* Hely az ingának */
+            border: 6px solid #3e2723;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            margin-top: 100px;
         }
 
         .cuckoo-house::before {
             content: '';
             position: absolute;
-            top: -120px; left: -30px;
-            border-left: 190px solid transparent; border-right: 190px solid transparent;
-            border-bottom: 120px solid #3e2723;
+            top: -100px; left: -25px;
+            border-left: 165px solid transparent; border-right: 165px solid transparent;
+            border-bottom: 100px solid #3e2723;
         }
 
         .clock-face {
-            width: 200px; height: 200px;
+            width: 170px; height: 170px;
             background: #d2b48c url('https://www.transparenttextures.com/patterns/wood-pattern.png');
             border-radius: 50%;
-            border: 12px double #2d1b15;
-            position: absolute; top: 120px; left: 50%; transform: translateX(-50%);
+            border: 10px double #2d1b15;
+            position: absolute; top: 110px; left: 50%; transform: translateX(-50%);
         }
 
-        .number { position: absolute; width: 100%; height: 100%; text-align: center; font-weight: bold; font-size: 1.2rem; color: #2d1b15; padding: 5px; box-sizing: border-box; }
-
+        .number { position: absolute; width: 100%; height: 100%; text-align: center; font-weight: bold; font-size: 1rem; color: #2d1b15; padding: 4px; box-sizing: border-box; }
         .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; background: linear-gradient(90deg, #2d1b15 0%, #5d4037 50%, #2d1b15 100%); }
-        .hour { width: 10px; height: 50px; z-index: 3; }
-        .minute { width: 7px; height: 75px; z-index: 2; }
-        .second { width: 2px; height: 85px; background: #8b0000; z-index: 4; }
+        .hour { width: 8px; height: 45px; z-index: 3; border-radius: 5px; }
+        .minute { width: 6px; height: 65px; z-index: 2; border-radius: 5px; }
+        .second { width: 2px; height: 75px; background: #8b0000; z-index: 4; }
 
         .pendulum-rod {
-            width: 8px; height: 180px;
-            background: #3e2723;
-            position: absolute; bottom: -180px; left: 50%;
-            transform: translateX(-50%);
-            transform-origin: top;
-            animation: swing 2s infinite ease-in-out;
+            width: 6px; height: 150px; background: #3e2723;
+            position: absolute; bottom: -150px; left: 50%; transform: translateX(-50%);
+            transform-origin: top; animation: swing 2s infinite ease-in-out;
         }
 
         .pendulum-bob {
-            width: 120px; height: 120px;
-            background: #3e2723;
-            border: 8px solid #2d1b15;
-            border-radius: 50%;
-            position: absolute; bottom: -60px; left: 50%;
-            transform: translateX(-50%);
-            overflow: hidden;
+            width: 100px; height: 100px; background: #3e2723; border: 6px solid #2d1b15; border-radius: 50%;
+            position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); overflow: hidden;
         }
 
         .pendulum-image { width: 100%; height: 100%; background-size: cover; background-position: center; filter: sepia(0.2); }
 
-        .door { width: 80px; height: 90px; background: #2d1b15; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); border-radius: 40px 40px 0 0; border: 3px solid #d2b48c; }
-        #bird { width: 60px; height: 60px; position: absolute; top: 100px; left: 10px; transition: top 1.2s ease-in-out; font-size: 35px; text-align: center; }
+        .door { width: 70px; height: 80px; background: #2d1b15; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); border-radius: 35px 35px 0 0; border: 2px solid #d2b48c; }
+        #bird { width: 50px; height: 50px; position: absolute; top: 90px; left: 10px; transition: top 1.2s ease-in-out; font-size: 30px; text-align: center; }
         .door.open #bird { top: 15px; }
 
         @keyframes swing {
-            0%, 100% { transform: translateX(-50%) rotate(18deg); }
-            50% { transform: translateX(-50%) rotate(-18deg); }
+            0%, 100% { transform: translateX(-50%) rotate(15deg); }
+            50% { transform: translateX(-50%) rotate(-15deg); }
         }
 
-        /* MOBIL OPTIMALIZÁLÁS */
         @media (max-width: 600px) {
-            body { padding-top: 20px; }
-            .cuckoo-house { margin-top: 140px; transform: scale(0.9); }
-            .side-panel { width: 90%; order: -1; } /* A naptár legyen legfelül */
+            body { flex-direction: column; align-items: center; padding-top: 10px; overflow-y: auto; }
+            .main-container { flex-direction: column; align-items: center; transform: scale(0.8); transform-origin: top center; }
+            .cuckoo-house { margin-top: 80px; margin-bottom: 200px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="side-panel">
-        <div class="cal-header" id="cal-month">HÓNAP</div>
-        <div class="cal-day" id="cal-day">00</div>
-        <div id="cal-weekday" style="font-weight: bold;">Nap</div>
-        <div class="cal-year" id="cal-year">2026</div>
-        <div class="poem-box" id="poem-content">Betöltés...</div>
-    </div>
+    <div class="main-container">
+        <div class="side-panel">
+            <div class="cal-header" id="cal-month">HÓNAP</div>
+            <div class="cal-day" id="cal-day">00</div>
+            <div id="cal-weekday" style="font-weight: bold; font-size: 0.9rem;">Nap</div>
+            <div class="cal-year" id="cal-year">2026</div>
+            
+            <div class="poem-box" id="poem-content">Betöltés...</div>
 
-    <div class="cuckoo-house">
-        <div class="door" id="door"><div id="bird">🐦</div></div>
-        <div class="clock-face" id="face"></div>
-        <div class="pendulum-rod">
-            <div class="pendulum-bob">
-                <div class="pendulum-image" id="pendulum-img"></div>
+            <div class="weather-box">
+                <div id="weather-city">Keresés...</div>
+                <div id="weather-icon">⏳</div>
+                <div class="weather-temp" id="weather-temp">--°C</div>
+            </div>
+
+            <div class="nameday-box">
+                <div class="nameday-label">Mai névnap</div>
+                <div class="nameday-name" id="nameday-display">...</div>
+            </div>
+        </div>
+
+        <div class="cuckoo-house">
+            <div class="door" id="door"><div id="bird">🐦</div></div>
+            <div class="clock-face" id="face"></div>
+            <div class="pendulum-rod">
+                <div class="pendulum-bob">
+                    <div class="pendulum-image" id="pendulum-img"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -133,17 +164,10 @@
         const cuckooSound = new Audio('https://www.mobil-csengohang.hu/files/csengohang/mp3/effekt/kakukk.mp3'); 
 
         const versek = {
-            tavasz: [{ iro: "József Attila", szoveg: "Sándor, József, Benedek,\nzsákban hozzák a meleget." }, { iro: "Petőfi Sándor", szoveg: "Itt van a tavasz, itt van újra,\nS szép, mint mindig, énnekem." }],
-            nyar: [{ iro: "Radnóti Miklós", szoveg: "Aranyat érő napsugárban\nfürdik a néma táj." }, { iro: "Kosztolányi Dezső", szoveg: "A nyár, a nyár!\nLobog a tűz, a nap hevít." }],
-            osz: [{ iro: "Áprily Lajos", szoveg: "A bíborerdő sárga lombja\nmár suttogva és sírva hull." }, { iro: "Petőfi Sándor", szoveg: "Itt van az ősz, itt van újra,\nS szép, mint mindig, énnekem." }],
-            tel: [{ iro: "Weöres Sándor", szoveg: "Hó szakad, hó szakad,\nfűre, fára rárakad." }, { iro: "József Attila", szoveg: "Azt mondják, hogy a tél hideg,\nde nekem mégis kedves." }]
-        };
-
-        const landscapeIds = {
-            tavasz: [1024, 1040, 1044],
-            nyar: [10, 11, 16],
-            osz: [1043, 1058, 1059],
-            tel: [1036, 1037, 1039]
+            tavasz: [{ iro: "József Attila", szoveg: "Sándor, József, Benedek,\nzsákban hozzák a meleget." }],
+            nyar: [{ iro: "Radnóti Miklós", szoveg: "Aranyat érő napsugárban\nfürdik a néma táj." }],
+            osz: [{ iro: "Petőfi Sándor", szoveg: "Itt van az ősz, itt van újra." }],
+            tel: [{ iro: "Weöres Sándor", szoveg: "Hó szakad, hó szakad,\nfűre, fára rárakad." }]
         };
 
         const face = document.getElementById('face');
@@ -153,6 +177,39 @@
             num.style.transform = `rotate(${i * 30}deg)`;
             num.innerHTML = `<span style="display:inline-block; transform:rotate(-${i * 30}deg)">${i}</span>`;
             face.appendChild(num);
+        }
+
+        // --- Névnap szűrés logika ---
+        async function updateNameday() {
+            try {
+                const response = await fetch('https://api.nevnapok.eu/ma');
+                const data = await response.json();
+                const allNames = Object.values(data)[0];
+                
+                // Csak az első 2 nevet jelenítjük meg, mert általában azok a legismertebbek
+                // vagy az API sorrendje alapján a fő nevek.
+                const commonNames = allNames.slice(0, 2); 
+                
+                document.getElementById('nameday-display').innerText = commonNames.join(", ");
+            } catch (error) {
+                document.getElementById('nameday-display').innerText = "Névnap";
+            }
+        }
+
+        function getWeatherIcon(code) {
+            const icons = { "Clear": "☀️", "Sunny": "☀️", "Partly cloudy": "⛅", "Cloudy": "☁️", "Overcast": "☁️", "Mist": "🌫️", "Patchy rain": "🌦️", "Light rain": "🌧️", "Thundery": "⛈️", "Snow": "❄️" };
+            return icons[code] || "🌤️";
+        }
+
+        async function updateWeather() {
+            try {
+                const response = await fetch('https://wttr.in/?format=j1');
+                const data = await response.json();
+                const current = data.current_condition[0];
+                document.getElementById('weather-temp').innerText = `${current.temp_C}°C`;
+                document.getElementById('weather-city').innerText = data.nearest_area[0].areaName[0].value;
+                document.getElementById('weather-icon').innerText = getWeatherIcon(current.weatherDesc[0].value);
+            } catch (e) {}
         }
 
         function update() {
@@ -169,15 +226,12 @@
             document.getElementById('cal-day').innerText = now.getDate();
             document.getElementById('cal-weekday').innerText = ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"][now.getDay()];
             document.getElementById('cal-year').innerText = now.getFullYear();
-            
+
             let sName = (mo >= 2 && mo <= 4) ? "tavasz" : (mo >= 5 && mo <= 7) ? "nyar" : (mo >= 8 && mo <= 10) ? "osz" : "tel";
-            
             const imgEl = document.getElementById('pendulum-img');
             if (!imgEl.style.backgroundImage) {
-                const ids = landscapeIds[sName];
-                const randomId = ids[Math.floor(Math.random() * ids.length)];
-                imgEl.style.backgroundImage = `url('https://picsum.photos/id/${randomId}/300/300')`;
-                const v = versek[sName][Math.floor(Math.random() * versek[sName].length)];
+                imgEl.style.backgroundImage = `url('https://picsum.photos/seed/${sName}/200/200')`;
+                const v = versek[sName][0];
                 document.getElementById('poem-content').innerHTML = `"${v.szoveg}" <span class="poem-author">- ${v.iro}</span>`;
             }
         }
@@ -202,6 +256,9 @@
 
         setInterval(update, 1000);
         update();
+        updateWeather();
+        updateNameday();
+        setInterval(updateWeather, 600000);
     </script>
 </body>
 </html>
